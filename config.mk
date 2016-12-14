@@ -1,12 +1,9 @@
 PROJECT_ROOT = .
 
 # Source File Locations
-SRC        = $(PROJECT_ROOT)/src
-IN_SEARCH  = $(SRC)/buildSearch
-
+$(shell mkdir -p src)
+SRC      = $(PROJECT_ROOT)/src
 
 # Output Locations
+$(shell mkdir -p out)
 OUT                 = $(PROJECT_ROOT)/out
-OUT_EMPTYSEARCH     = $(OUT)/emptySearches
-OUT_INTERMEDIATE    = $(OUT)/intermediateQuery
-OUT_FINAL           = $(OUT)/finalSearch
