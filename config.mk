@@ -9,5 +9,5 @@ $(shell mkdir -p out)
 OUT                 = $(PROJECT_ROOT)/out
 
 # Years we scrape
-YEAR_START = 2010
-YEAR_END   = 2011
+YEAR_START = 2000
+YEAR_END   = 2016
