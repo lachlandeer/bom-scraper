@@ -1,5 +1,5 @@
 include config.mk
-include init.mk
+include subdir.mk
 
 .PHONY: getLinks
 getLinks: $(SRC_LIB)/mojoScrapeLinks.py
