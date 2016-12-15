@@ -3,28 +3,17 @@ Descriptive header
 """
 
 import os
-
-print("Path at terminal when executing this file")
-print(os.getcwd() + "\n")
-
 import time
 import sys
 
-print(sys.path)
+# append the ROOT directory to the python path so it can search thru subdirs
+sys.path.insert(0, os.getcwd())
 
+from src.lib import mojoScrapeLinks as mojo
 
-from src.lib import mojoScrapeLinks
-
-
-
-
-print('Number of arguments:', len(sys.argv), 'arguments.')
-print('Argument List:', str(sys.argv))
-
+# directory where the data will be stored
 datadir = sys.argv[3]
-print(datadir)
 
-STOP
 # Candidate years
 yearStart = int(sys.argv[1])
 yearEnd   = int(sys.argv[2])

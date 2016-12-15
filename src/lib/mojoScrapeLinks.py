@@ -25,7 +25,7 @@ def writeLinksToCSV(iYear, iType, movieLinks, datadir):
 
 
     # Write the csv file here
-    csvBaseName = datadir + "bom-links-" + iType
+    csvBaseName = datadir + "/bom-links-" + iType
     csvfile = csvBaseName + "-" + str(iYear)
 
     # Assuming a flat list
