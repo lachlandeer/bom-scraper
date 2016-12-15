@@ -1,4 +1,18 @@
+"""
+Functions are intended as helpers to be used in conjunction with the "getLinks.py"
+script to collect links to movie pages on box office mojo so that you can scrape
+data from the individual movie's pages
+
+expected usage:
+    from src.lib import mojoScrapeLinks
+
+"""
+
 def harvestMovieLinks(candidateURL, iYear, iType, pattern):
+"""
+Takes a box office mojo URL for a given year and release type and parses it to
+collect the links for each movie within the table.
+"""
     from bs4 import BeautifulSoup as bs
     import urllib.request
 
@@ -16,10 +30,12 @@ def harvestMovieLinks(candidateURL, iYear, iType, pattern):
         links.append("http://www.boxofficemojo.com" + link['href'])
         nEntries +=1
 
-
     return links
 
 def writeLinksToCSV(iYear, iType, movieLinks, datadir):
+"""
+Takes the harvested links and writes the output as a csv file.
+"""
     import csv
     print('All links found, writing csv with', len(movieLinks),  ' links...')
 
@@ -38,6 +54,16 @@ def writeLinksToCSV(iYear, iType, movieLinks, datadir):
     return
 
 def scrapeLinks(typeString, iYear, iType, datadir):
+"""
+For a given year and release type this function will run through all possible
+pages of data on Box Office mojo and parse the links to every movie's own page.
+The links are collected on a year-releaseType basis and saved as a csv
+
+For every year release-type pair:
+Function calls
+    - harvestMovieLinks() to collect the links
+    - writeLinksToCSV() to save the collected links to a csv
+"""
     import re
     import os
     import time

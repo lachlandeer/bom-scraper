@@ -1,5 +1,18 @@
 """
-Descriptive header
+This script harvests the links from Box Office Mojo that we will scrape data from.
+Collection of links happens by year - release type. So a typical output would be
+2015-wide-release.csv
+
+It takes as inputs:
+    1. The first year you want to scrape
+    2. The last year you want to scrape
+    3. The directory where the links will be saved to. Links saved as a csv
+
+File produces a csv of links for each year / release type combination.
+
+Example usage:
+    python getlinks.py 2010 2012 outputDirectory
+
 """
 
 import os
@@ -17,7 +30,7 @@ datadir = sys.argv[3]
 # Candidate years
 yearStart = int(sys.argv[1])
 yearEnd   = int(sys.argv[2])
-relevantYears = range(yearStart,yearEnd)
+relevantYears = range(yearStart,yearEnd+1)
 
 # Candidate Release Types
 releaseType =['wide', 'limited']
