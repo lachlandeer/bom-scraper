@@ -219,71 +219,85 @@ def process_movie(url):
     Takes a URL to a movie website on Box Office Mojo and collects all the
     relevant observable characteristics from the summary page.
     '''
-    headers = ['movie_id','movie_title', 'domestic_total_gross', 'foreign_total_gross',
-               'opening_weekend', 'opening_weekend_limited',
-               'opening_weekend_wide',
-               'release_date', 'close_date' , 'in_release_days' , 'runtime_mins',
-               'rating',
-               'genre', 'distributor', 'director', 'producer', 'production_budget', 'widest_release_theaters',
-               'actors', 'writers', 'cinematographers', 'composers'
+    headers = ['movie_id','movie_title',
+                'domestic_total_gross', 'foreign_total_gross', 'opening_weekend',
+                'opening_weekend_limited', 'opening_weekend_wide',
+                'release_date', 'close_date' , 'in_release_days' ,
+                'runtime_mins',
+                'rating', 'genre', 'distributor', 'director', 'producer',
+                'production_budget', 'widest_release_theaters',
+                'actors', 'writers', 'cinematographers', 'composers'
               ]
     response = requests.get(url)
+
     if response.status_code != 200:
         return None
+
     page = response.text
     soup = BeautifulSoup(page,"lxml")
 
+    ## --- Create a movie ID from the URL and get the title
     movie_id = url.rsplit('=', 1)[-1].rsplit('.', 1)[0]
     movie_title = get_movie_title(soup)
 
     ## --- Date Specific
     raw_release_date = get_movie_value(soup,'Release Date')
-    release_date = to_date(raw_release_date)
+    release_date     = to_date(raw_release_date)
 
-    raw_close_date = get_close(soup)
-    close_date = to_date(raw_close_date)
+    raw_close_date   = get_close(soup)
+    close_date       = to_date(raw_close_date)
 
-    in_release = get_inrelease(soup)
+    in_release       = get_inrelease(soup)
 
     ## --- Box Office
     raw_domestic_total_gross = get_movie_value(soup,'Domestic Total')
-    domestic_total_gross = money_to_int(raw_domestic_total_gross)
+    domestic_total_gross     = money_to_int(raw_domestic_total_gross)
 
-    raw_foreign_total_gross = get_foreigntotal(soup)
-    foreign_total_gross = money_to_int(raw_foreign_total_gross)
+    raw_foreign_total_gross  = get_foreigntotal(soup)
+    foreign_total_gross      = money_to_int(raw_foreign_total_gross)
 
-    raw_domestic_opening_weekend = get_openingweekend(soup)
-    domestic_opening_weekend = money_to_int(raw_domestic_opening_weekend)
+    raw_domestic_opening_weekend    = get_openingweekend(soup)
+    domestic_opening_weekend        = money_to_int(raw_domestic_opening_weekend)
 
     raw_domestic_opening_weekend_limited = get_openingweekend_limited(soup)
-    domestic_opening_weekend_limited = money_to_int(raw_domestic_opening_weekend_limited)
+    domestic_opening_weekend_limited     = money_to_int(raw_domestic_opening_weekend_limited)
 
-    raw_domestic_opening_weekend_wide = get_openingweekend_wide(soup)
-    domestic_opening_weekend_wide = money_to_int(raw_domestic_opening_weekend_wide)
+    raw_domestic_opening_weekend_wide    = get_openingweekend_wide(soup)
+    domestic_opening_weekend_wide        = money_to_int(raw_domestic_opening_weekend_wide)
 
     ## -- remaining characteristics
-    raw_runtime = get_movie_value(soup,'Runtime')
-    runtime = runtime_to_minutes(raw_runtime)
-    rating = get_movie_value(soup,'MPAA Rating')
-    genre = get_movie_value(soup,'Genre: ')
-    distributor = get_movie_value(soup,'Distributor: ')
-    production_budget = get_movie_value(soup, 'Production Budget: ')
-    director = get_all_players(soup,['Director:','Director'])
-    producer = get_all_players(soup,['Producer:','Producers:','Producer','Producers'])
-    actors = get_all_players(soup,['Actor:','Actors:','Actor','Actors'])
-    writers = get_all_players(soup,['Writer:','Writers:','Screenwriter:','Screenwriters:',
-                                   'Writer','Writers','Screenwriter','Screenwriters'])
-    cinematographers = get_all_players(soup, ['Cinematographer:','Cinematographer',
-                                              'Cinematographers:','Cinematographers'])
-    composers = get_all_players(soup, ['Composer:','Composers:','Composer','Composers'])
+    raw_runtime             = get_movie_value(soup,'Runtime')
+    runtime                 = runtime_to_minutes(raw_runtime)
+    rating                  = get_movie_value(soup,'MPAA Rating')
+    genre                   = get_movie_value(soup,'Genre: ')
+    distributor             = get_movie_value(soup,'Distributor: ')
+    production_budget       = get_movie_value(soup, 'Production Budget: ')
     widest_release_theaters = get_theaters(soup)
 
+    ## --- People involved in the movie
+    director         = get_all_players(soup,['Director:','Director'])
+    producer         = get_all_players(soup,['Producer:','Producers:',
+                                                'Producer','Producers'])
+    actors           = get_all_players(soup,['Actor:','Actors:','Actor','Actors'])
+    writers          = get_all_players(soup,['Writer:','Writers:',
+                                                'Screenwriter:','Screenwriters:',
+                                                'Writer','Writers',
+                                                'Screenwriter','Screenwriters'])
+    cinematographers = get_all_players(soup, ['Cinematographer:','Cinematographer',
+                                              'Cinematographers:','Cinematographers'])
+    composers        = get_all_players(soup, ['Composer:','Composers:',
+                                                'Composer','Composers'])
 
-    df_movie = pd.DataFrame([[movie_id, movie_title, domestic_total_gross,  foreign_total_gross,
-                              domestic_opening_weekend, domestic_opening_weekend_limited, domestic_opening_weekend_wide,
-                              release_date, close_date, in_release, runtime, rating,
-                              genre, distributor, director, producer, production_budget, widest_release_theaters,
-                              actors, writers, cinematographers, composers
+
+    ## --- Put the data collected into a pandas dataframe
+    df_movie = pd.DataFrame([[movie_id, movie_title,
+                                domestic_total_gross,  foreign_total_gross,
+                                domestic_opening_weekend, domestic_opening_weekend_limited,
+                                domestic_opening_weekend_wide,
+                                release_date, close_date, in_release, runtime,
+                                rating, genre, distributor, director, producer,
+                                production_budget, widest_release_theaters,
+                                actors, writers, cinematographers, composers
                              ]],
                             columns=headers)
 
