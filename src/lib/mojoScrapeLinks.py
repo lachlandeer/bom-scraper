@@ -16,10 +16,24 @@ def harvestMovieLinks(candidateURL, iYear, iType, pattern):
     from bs4 import BeautifulSoup as bs
     import urllib.request
 
+    import requests
+    sess = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(max_retries=10)
+    sess.mount('http://', adapter)
+
     # scrape:
     links = []
 
-    soup = bs(urllib.request.urlopen(candidateURL).read(), "lxml")
+    #soup = bs(urllib.request.urlopen(candidateURL).read(), "lxml")
+
+    response = sess.get(candidateURL)
+
+    if response.status_code != 200:
+        return None
+
+    page = response.text
+    soup = BeautifulSoup(page,"lxml")
+
     allTables = soup.findChildren('table')
 
     linksTable = allTables[6]
