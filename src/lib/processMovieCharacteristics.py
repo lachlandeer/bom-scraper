@@ -16,6 +16,11 @@ import time
 import urllib.request
 import csv
 
+import requests
+sess = requests.Session()
+adapter = requests.adapters.HTTPAdapter(max_retries=10)
+sess.mount('http://', adapter)
+
 ## functions
 
 def get_movie_value(soup, field_name):
@@ -228,7 +233,7 @@ def process_movie(url):
                 'production_budget', 'widest_release_theaters',
                 'actors', 'writers', 'cinematographers', 'composers'
               ]
-    response = requests.get(url)
+    response = sess.get(url)
 
     if response.status_code != 200:
         return None

@@ -5,18 +5,43 @@ Header to be added later
 import os
 import time
 import sys
+from random import randint
+import pandas as pd
+import csv
 
 # append the ROOT directory to the python path so it can search thru subdirs
 sys.path.insert(0, os.getcwd())
 
 from src.lib import processMovieCharacteristics as charac
 
-print(charac.get_movie_title)
+# Candidate years and release type
+yearStart = int(sys.argv[1])
+yearEnd   = int(sys.argv[2])
+relevantYears = range(yearStart,yearEnd+1)
 
-import json
-from pprint import pprint
+releaseType = 'wide'
 
-with open('./src/scrap_specs/MovieCharacteristics.json') as data_file:    
-    data = json.load(data_file)
+# directory where the data will be stored
+linkdir = sys.argv[3]
+datadir = sys.argv[4]
 
-pprint(data)
+#linkFile = linkdir + '/bom-links-'    + releaseType + "-" + year
+#outfile  = datadir + '/movie-charac-' + releaseType + "-" + year
+
+for iYear in relevantYears:
+    linkFile = linkdir + '/bom-links-'    + releaseType + "-" + str(iYear)
+    outfile  = datadir + '/movie-charac-' + releaseType + "-" + str(iYear)
+    #print(linkFile)
+    #print(outfile)
+
+    with open(linkFile) as f:
+        df = pd.DataFrame()
+        for row in csv.reader(f):
+            currentURL = ''.join(row) # convert list to string
+            print("scraping:", currentURL)
+            df_movie = charac.process_movie(currentURL)
+            if df_movie is not None:
+                df = df.append(df_movie, ignore_index=True)
+            time.sleep(randint(5,15))
+
+        df.to_csv(outfile + '.csv', index = False)
