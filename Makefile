@@ -1,6 +1,12 @@
 include config.mk
 include init.mk
 
+
+.PHONY: getCharacteristics
+getCharacteristics:
+	python $(SRC_MAIN)/getLinks.py $(YEAR_START) $(YEAR_END) \
+	 			$(OUT_LINKS) $()
+
 .PHONY: getLinks
 getLinks: $(SRC_LIB)/mojoScrapeLinks.py
 	python $(SRC_MAIN)/getLinks.py $(YEAR_START) $(YEAR_END) $(OUT_LINKS)

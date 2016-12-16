@@ -9,6 +9,7 @@ init:
 	# out sub-directories
 	$(shell mkdir -p $(OUT)/links)
 	$(shell mkdir -p $(OUT)/data)
+	$(shell mkdir -p $(OUT)/data/charac)
 
 # declare sub directores
 SRC_LIB  = $(SRC)/lib
@@ -17,3 +18,5 @@ SRC_SPEC = $(SRC)/scrape_specs
 
 OUT_LINKS = $(OUT)/links
 OUT_DATA  = $(OUT)/data
+
+OUT_DATA_CHARAC  = $(OUT)/data/charac
