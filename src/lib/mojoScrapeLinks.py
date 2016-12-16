@@ -32,7 +32,7 @@ def harvestMovieLinks(candidateURL, iYear, iType, pattern):
         return None
 
     page = response.text
-    soup = BeautifulSoup(page,"lxml")
+    soup = bs(page,"lxml")
 
     allTables = soup.findChildren('table')
 
