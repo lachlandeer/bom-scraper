@@ -10,7 +10,7 @@ getCharacteristics: $(SRC_LIB)/processMovieCharacteristics.py \
 
 ## getLinks           : scrapes weblinks to movie's pages by year and release type = [wide, limited]
 .PHONY: getLinks
-getLinks: $(SRC_LIB)/mojoScrapeLinks.py
+getLinks: $(SRC_LIB)/mojoScrapeLinks.py init
 	python $(SRC_MAIN)/getLinks.py $(YEAR_START) $(YEAR_END) $(OUT_LINKS)
 
 .PHONY: clean
