@@ -48,6 +48,7 @@ final_out
 formatted_data
 out
 project_documentation
+sandbox
 scons.py
 test
 Test
