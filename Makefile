@@ -1,5 +1,13 @@
 include config.mk
 include init.mk
+include initBoxOffice.mk
+
+## getBoxOffice: scrapes daily box office
+.PHONY: getDailyBoxOffice
+getDailyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
+			initBoxOffice #getLinks
+	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+	 			$(OUT_LINKS) $(OUT_DATA_BO_DAILY) daily
 
 ## getCharacteristics : scrapes the summary information from a movie's page
 .PHONY: getCharacteristics

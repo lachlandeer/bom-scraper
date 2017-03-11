@@ -19,7 +19,7 @@ sys.path.insert(0, os.getcwd())
 
 from src.lib import processBoxOfficeReturns as boxOffice
 
-Candidate years and release type
+#Candidate years and release type
 yearStart = int(sys.argv[1])
 yearEnd   = int(sys.argv[2])
 relevantYears = range(yearStart,yearEnd+1)
@@ -56,7 +56,7 @@ for iYear in relevantYears:
                 else:
                     pass
                 # save the data
-                datadir = datadirRoot + '/' + str(iYear) + './' + frequency + '/'
+                datadir = datadirRoot + '/' + str(iYear) + '/'
                 df_movie.to_csv(datadir + outfile + '.csv', index = False)
                 # pause between pages
                 time.sleep(randint(5,15))
