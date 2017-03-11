@@ -19,55 +19,69 @@ sys.path.insert(0, os.getcwd())
 
 from src.lib import processBoxOfficeReturns as boxOffice
 
-# Candidate years and release type
-# yearStart = int(sys.argv[1])
-# yearEnd   = int(sys.argv[2])
-# relevantYears = range(yearStart,yearEnd+1)
+Candidate years and release type
+yearStart = int(sys.argv[1])
+yearEnd   = int(sys.argv[2])
+relevantYears = range(yearStart,yearEnd+1)
+
+#releaseType =['wide', 'limited']
+releaseType =['wide']
+
+# directory where the data will be stored
+linkdir     = sys.argv[3]
+datadirRoot = sys.argv[4]
+# frequency of collection
+frequency = sys.argv[5]
+
+for iYear in relevantYears:
+    for iType in releaseType:
+        linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
+
+        with open(linkFile) as f:
+            for row in csv.reader(f):
+                currentURL = ''.join(row) # convert list to string
+                print("scraping:", currentURL)
+                if frequency == 'weekend':
+                    movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+
+                    outfile = 'boxOffice-weekend-'+ movie_id
+                elif frequency == 'weekly':
+                    movie_id, df_movie = boxOffice.process_weeklyBoxOffice(currentURL)
+
+                    outfile = 'boxOffice-weekly-'+ movie_id
+                elif frequency == 'daily':
+                    movie_id, df_movie = boxOffice.process_dailyBoxOffice(currentURL)
+
+                    outfile = 'boxOffice-daily-'+ movie_id
+                else:
+                    pass
+                # save the data
+                datadir = datadirRoot + '/' + str(iYear) + './' + frequency + '/'
+                df_movie.to_csv(datadir + outfile + '.csv', index = False)
+                # pause between pages
+                time.sleep(randint(5,15))
+
+# currentURL = 'http://www.boxofficemojo.com/movies/?id=intothewoods.htm'
 #
-# #releaseType =['wide', 'limited']
-# releaseType =['wide']
+# #frequency = 'weekend'
+# #frequency = 'weekly'
+# frequency = 'daily'
 #
-# # directory where the data will be stored
-# linkdir = sys.argv[3]
-# datadir = sys.argv[4]
-# # frequency of collection
-# frequency = sys.argv[5]
-
-# for iYear in relevantYears:
-#     for iType in releaseType:
-#         linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
-
-        # with open(linkFile) as f:
-        #     df = pd.DataFrame()
-        #     for row in csv.reader(f):
-        #         currentURL = ''.join(row) # convert list to string
-        #         print("scraping:", currentURL)
-        #         movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
-        #         # save as a data set
-        #         outfile = 'boxOffice-weekend-'+ movie_id
-        #         df_movie.to_csv(outfile + '.csv', index = False)
-
-currentURL = 'http://www.boxofficemojo.com/movies/?id=intothewoods.htm'
-
-#frequency = 'weekend'
-#frequency = 'weekly'
-frequency = 'daily'
-
-
-if frequency == 'weekend':
-    movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
-
-    outfile = 'boxOffice-weekend-'+ movie_id
-    df_movie.to_csv(outfile + '.csv', index = False)
-elif frequency == 'weekly':
-    movie_id, df_movie = boxOffice.process_weeklyBoxOffice(currentURL)
-
-    outfile = 'boxOffice-weekly-'+ movie_id
-    df_movie.to_csv(outfile + '.csv', index = False)
-elif frequency == 'daily':
-    movie_id, df_movie = boxOffice.process_dailyBoxOffice(currentURL)
-
-    outfile = 'boxOffice-daily-'+ movie_id
-    df_movie.to_csv(outfile + '.csv', index = False)
-else:
-    pass
+#
+# if frequency == 'weekend':
+#     movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+#
+#     outfile = 'boxOffice-weekend-'+ movie_id
+#     df_movie.to_csv(outfile + '.csv', index = False)
+# elif frequency == 'weekly':
+#     movie_id, df_movie = boxOffice.process_weeklyBoxOffice(currentURL)
+#
+#     outfile = 'boxOffice-weekly-'+ movie_id
+#     df_movie.to_csv(outfile + '.csv', index = False)
+# elif frequency == 'daily':
+#     movie_id, df_movie = boxOffice.process_dailyBoxOffice(currentURL)
+#
+#     outfile = 'boxOffice-daily-'+ movie_id
+#     df_movie.to_csv(outfile + '.csv', index = False)
+# else:
+#     pass
