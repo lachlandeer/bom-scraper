@@ -109,8 +109,10 @@ def get_boxOffice(anchor):
 
 def get_theatres(anchor):
     '''
-    Return the number of theatres the movie was showing in over a given week/weekend
-    The data are always reported as constant over a week, using the weekend number as the number of theatres.
+    Return the number of theatres the movie was showing in over a given
+    week/weekend
+    The data are always reported as constant over a week, using the
+    weekend number as the number of theatres.
     '''
     try:
         theatres_tag = anchor.find_next("td").find_next("td").find_next("td").find_next("td")
@@ -122,7 +124,8 @@ def get_theatres(anchor):
 
 def get_totalBoxOfficeToDate(anchor):
     '''
-    Return the the total box office returns of a film upto (and including) that week/weekend
+    Return the the total box office returns of a film upto (and including)
+    that week/weekend
     '''
     try:
         totalBoxOffice_tag = anchor.find_next("td").find_next("td").find_next("td").find_next("td").find_next("td").find_next("td").find_next("td")
@@ -135,9 +138,78 @@ def get_totalBoxOfficeToDate(anchor):
 def identify_longWeekend(df):
     '''
     Identifies long weekends by a leading <i> on the date column.
-    Creates Dummy variable for long weekends, and then cleans up the date column and passes data frame back to user
+    Creates Dummy variable for long weekends, and then cleans up the date column
+    and passes data frame back to user
     '''
     df['longWeekend'] = df.date.str.contains('<i>')
     df['date'] = df.date.str.replace('<i>', '')
 
     return df
+
+
+def scrape_BoxOfficeInfo(href_pattern, soup):
+    '''
+    Scrape the necessary Box Office information from the webpage
+    '''
+    df_movie = pd.DataFrame()
+
+    for iAnchor in soup.findAll('a', href=href_pattern):
+
+        ## convert to string for regular expression parsing
+        obj = str(iAnchor)
+
+        ## Get date information from stripping info from inside the href link
+        year, calendarWeek, date = find_dateInfo(obj)
+
+        ## Get Box Office Information etc
+        rank = get_weekly_movieRank(iAnchor)
+        boxOffice = get_boxOffice(iAnchor)
+        theatres = get_theatres(iAnchor)
+        grossBoxOffice = get_totalBoxOfficeToDate(iAnchor)
+
+
+        ## Put data into a weekly data-frame
+        df_week = pd.DataFrame([[movie_id, year, calendarWeek, date,
+                                  rank, boxOffice, theatres, grossBoxOffice
+                             ]]
+                            )
+        ## append that week to existing data
+        df_movie = df_movie.append(df_week, ignore_index=True)
+
+        ## clear out the weekly data
+        df_movie.dropna().empty
+
+        # label the columns
+        df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
+                            "boxOffice", "theatres", "grossBoxOffice"]
+
+        return df_movie
+
+
+def process_weekendBoxOffice(currentURL):
+    '''
+    Takes a URL to a movie website on Box Office Mojo and collects weekend
+    Box Office information.
+    '''
+    href_pattern = re.compile('^/weekend/chart/\?yr')
+
+    # Get the movie ID and direct to the page storing weekend Box Office takings
+    movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
+    print(movie_id)
+    boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekend&id=' + movie_id + '.htm'
+    print(boxOffice_url)
+
+    response = sess.get(boxOffice_url)
+
+    if response.status_code != 200:
+        return None
+
+    page = response.text
+    soup = BeautifulSoup(page,"lxml")
+
+    df_movie = scrape_BoxOfficeInfo(href_pattern, soup)
+
+    # clean up long weekend information
+    df_movie = identify_longWeekend(df_movie)
+
+    return df_movie
