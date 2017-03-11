@@ -2,12 +2,30 @@ include config.mk
 include init.mk
 include initBoxOffice.mk
 
-## getBoxOffice: scrapes daily box office
+## getAllBoxOffice    : scrapes all frequencies of box office
+.PHONY: getAllBoxOffice
+getAllBoxOffice: getDailyBoxOffice getWeekendBoxOffice getWeeklyBoxOffice
+
+## getDailyBoxOffice  : scrapes daily box office
 .PHONY: getDailyBoxOffice
 getDailyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
 			initBoxOffice #getLinks
 	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
 	 			$(OUT_LINKS) $(OUT_DATA_BO_DAILY) daily
+
+## getWeekendBoxOffice: scrapes weekend box office
+.PHONY: getWeekendBoxOffice
+getWeekendBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
+			initBoxOffice #getLinks
+	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+	 			$(OUT_LINKS) $(OUT_DATA_BO_WEEKEND) weekend
+
+## getWeeklyBoxOffice : scrapes weekly box office
+.PHONY: getWeeklyBoxOffice
+getWeeklyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
+			initBoxOffice #getLinks
+	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+	 			$(OUT_LINKS) $(OUT_DATA_BO_WEEKLY) weekly
 
 ## getCharacteristics : scrapes the summary information from a movie's page
 .PHONY: getCharacteristics
