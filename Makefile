@@ -2,6 +2,10 @@ include config.mk
 include init.mk
 include initBoxOffice.mk
 
+## getEverything:     : scrapes all information from Box Office Mojo
+.PHONY: getEverything
+getEverything: getAllBoxOffice getCharacteristics
+
 ## getAllBoxOffice    : scrapes all frequencies of box office
 .PHONY: getAllBoxOffice
 getAllBoxOffice: getDailyBoxOffice getWeekendBoxOffice getWeeklyBoxOffice
