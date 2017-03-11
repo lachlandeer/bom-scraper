@@ -157,8 +157,7 @@ def scrape_BoxOfficeInfo(href_pattern, soup, movie_id):
 
         ## convert to string for regular expression parsing
         anchorString = str(iAnchor)
-        print(anchorString)
-
+        
         ## Get date information from stripping info from inside the href link
         year, calendarWeek, date = find_dateInfo(anchorString)
 
@@ -200,6 +199,34 @@ def process_weekendBoxOffice(currentURL):
     movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
     print(movie_id)
     boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekend&id=' + movie_id + '.htm'
+    print(boxOffice_url)
+
+    response = sess.get(boxOffice_url)
+
+    if response.status_code != 200:
+        return None
+
+    page = response.text
+    soup = BeautifulSoup(page,"lxml")
+
+    df_movie = scrape_BoxOfficeInfo(href_pattern, soup, movie_id)
+
+    # clean up long weekend information
+    df_movie = identify_longWeekend(df_movie)
+
+    return movie_id, df_movie
+
+def process_weeklyBoxOffice(currentURL):
+    '''
+    Takes a URL to a movie website on Box Office Mojo and collects weekly
+    Box Office information.
+    '''
+    href_pattern = re.compile('^/weekly/chart/')
+
+    # Get the movie ID and direct to the page storing weekend Box Office takings
+    movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
+    print(movie_id)
+    boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekly&id=' + movie_id + '.htm'
     print(boxOffice_url)
 
     response = sess.get(boxOffice_url)

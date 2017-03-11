@@ -2,7 +2,9 @@
 Main file to scrape the Box Office returns of movies.
 
 This file runs the scraper for all years from 'yearStart' to 'yearEnd', for
-all movies of 'releaseType'
+all movies of 'releaseType.'
+
+Returns Box office of type 'frequency' which must be listed as sys.argv[5]
 """
 
 import os
@@ -28,6 +30,8 @@ from src.lib import processBoxOfficeReturns as boxOffice
 # # directory where the data will be stored
 # linkdir = sys.argv[3]
 # datadir = sys.argv[4]
+# # frequency of collection
+# frequency = sys.argv[5]
 
 # for iYear in relevantYears:
 #     for iType in releaseType:
@@ -45,7 +49,18 @@ from src.lib import processBoxOfficeReturns as boxOffice
 
 currentURL = 'http://www.boxofficemojo.com/movies/?id=intothewoods.htm'
 
-movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+#frequency = 'weekend'
+frequency = 'weekly'
 
-outfile = 'boxOffice-weekend-'+ movie_id
-df_movie.to_csv(outfile + '.csv', index = False)
+if frequency == 'weekend':
+    movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+
+    outfile = 'boxOffice-weekend-'+ movie_id
+    df_movie.to_csv(outfile + '.csv', index = False)
+elif frequency == 'weekly':
+    movie_id, df_movie = boxOffice.process_weeklyBoxOffice(currentURL)
+
+    outfile = 'boxOffice-weekly-'+ movie_id
+    df_movie.to_csv(outfile + '.csv', index = False)
+else:
+    pass
