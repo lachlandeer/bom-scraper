@@ -22,52 +22,52 @@ adapter = requests.adapters.HTTPAdapter(max_retries=10)
 sess.mount('http://', adapter)
 
 # First Information about dates
-def extract_year(urlstring):
+def extract_year(anchorString):
     '''
     Find the year the current data belongs to
     '''
     try:
-        year=re.findall(r'20[0-9][0-9]', obj)[0]
+        year=re.findall(r'20[0-9][0-9]', anchorString)[0]
         return year
     except:
         return None
 
-def extract_calendarWeek(urlstring):
+def extract_calendarWeek(anchorString):
     '''
     Find the calendar week the current data belongs to
     '''
     try:
-        calendarWeek=re.findall(r'wk\=(.[0-9]{1})', obj)[0]
+        calendarWeek=re.findall(r'wk\=(.[0-9]{1})', anchorString)[0]
         return calendarWeek
     except:
         pass
     try:
-        calendarWeek=re.findall(r'wknd\=(.[0-9]{1})', obj)[0]
+        calendarWeek=re.findall(r'wknd\=(.[0-9]{1})', anchorString)[0]
         return calendarWeek
     except:
         return None
 
 
-def extract_date(urlstring):
+def extract_date(anchorString):
     '''
     Find the start and end date of the Calendar Week
     '''
     try:
-        date = re.findall(r'<b>(.+?)<', obj)[0]
+        date = re.findall(r'<b>(.+?)<', anchorString)[0]
         # clean out any badly parsed symbols
         date = re.sub('\x96', '-', date)
         return date
     except:
         return None
 
-def find_dateInfo(anchor):
+def find_dateInfo(anchorString):
     '''
     Returns all relevant date information contained in the Box Office mojo href string
     '''
     #obj = str(anchor)
-    year=extract_year(obj)
-    calendarWeek=extract_calendarWeek(obj)
-    date=extract_date(obj)
+    year=extract_year(anchorString)
+    calendarWeek=extract_calendarWeek(anchorString)
+    date=extract_date(anchorString)
 
     return year, calendarWeek, date
 
@@ -147,7 +147,7 @@ def identify_longWeekend(df):
     return df
 
 
-def scrape_BoxOfficeInfo(href_pattern, soup):
+def scrape_BoxOfficeInfo(href_pattern, soup, movie_id):
     '''
     Scrape the necessary Box Office information from the webpage
     '''
@@ -156,10 +156,11 @@ def scrape_BoxOfficeInfo(href_pattern, soup):
     for iAnchor in soup.findAll('a', href=href_pattern):
 
         ## convert to string for regular expression parsing
-        obj = str(iAnchor)
+        anchorString = str(iAnchor)
+        print(anchorString)
 
         ## Get date information from stripping info from inside the href link
-        year, calendarWeek, date = find_dateInfo(obj)
+        year, calendarWeek, date = find_dateInfo(anchorString)
 
         ## Get Box Office Information etc
         rank = get_weekly_movieRank(iAnchor)
@@ -179,11 +180,13 @@ def scrape_BoxOfficeInfo(href_pattern, soup):
         ## clear out the weekly data
         df_movie.dropna().empty
 
-        # label the columns
-        df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
-                            "boxOffice", "theatres", "grossBoxOffice"]
+        ## end for loop
 
-        return df_movie
+        # label the columns
+    df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
+                        "boxOffice", "theatres", "grossBoxOffice"]
+
+    return df_movie
 
 
 def process_weekendBoxOffice(currentURL):
@@ -207,7 +210,7 @@ def process_weekendBoxOffice(currentURL):
     page = response.text
     soup = BeautifulSoup(page,"lxml")
 
-    df_movie = scrape_BoxOfficeInfo(href_pattern, soup)
+    df_movie = scrape_BoxOfficeInfo(href_pattern, soup, movie_id)
 
     # clean up long weekend information
     df_movie = identify_longWeekend(df_movie)

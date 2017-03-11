@@ -18,27 +18,34 @@ sys.path.insert(0, os.getcwd())
 from src.lib import processBoxOfficeReturns as boxOffice
 
 # Candidate years and release type
-yearStart = int(sys.argv[1])
-yearEnd   = int(sys.argv[2])
-relevantYears = range(yearStart,yearEnd+1)
+# yearStart = int(sys.argv[1])
+# yearEnd   = int(sys.argv[2])
+# relevantYears = range(yearStart,yearEnd+1)
+#
+# #releaseType =['wide', 'limited']
+# releaseType =['wide']
+#
+# # directory where the data will be stored
+# linkdir = sys.argv[3]
+# datadir = sys.argv[4]
 
-#releaseType =['wide', 'limited']
-releaseType =['wide']
+# for iYear in relevantYears:
+#     for iType in releaseType:
+#         linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
 
-# directory where the data will be stored
-linkdir = sys.argv[3]
-datadir = sys.argv[4]
+        # with open(linkFile) as f:
+        #     df = pd.DataFrame()
+        #     for row in csv.reader(f):
+        #         currentURL = ''.join(row) # convert list to string
+        #         print("scraping:", currentURL)
+        #         movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+        #         # save as a data set
+        #         outfile = 'boxOffice-weekend-'+ movie_id
+        #         df_movie.to_csv(outfile + '.csv', index = False)
 
-for iYear in relevantYears:
-    for iType in releaseType:
-        linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
+currentURL = 'http://www.boxofficemojo.com/movies/?id=intothewoods.htm'
 
-        with open(linkFile) as f:
-            df = pd.DataFrame()
-            for row in csv.reader(f):
-                currentURL = ''.join(row) # convert list to string
-                print("scraping:", currentURL)
-                movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
-                # save as a data set
-                outfile = 'boxOffice-weekend-'+ movie_id
-                df_movie.to_csv(outfile + '.csv', index = False)
+movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
+
+outfile = 'boxOffice-weekend-'+ movie_id
+df_movie.to_csv(outfile + '.csv', index = False)
