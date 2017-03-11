@@ -47,6 +47,10 @@ Collects all box office frequencies for US market
 make getWeekendBoxOffice
 ```
 
+## To Do:
+
+* Get Foreign Box Office by country - week 
+
 ## Other Info:
 
 * Assumes that you have make installed on your machine - default for Unix system
