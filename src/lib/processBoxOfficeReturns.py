@@ -157,7 +157,7 @@ def scrape_BoxOfficeInfo(href_pattern, soup, movie_id):
 
         ## convert to string for regular expression parsing
         anchorString = str(iAnchor)
-        
+
         ## Get date information from stripping info from inside the href link
         year, calendarWeek, date = find_dateInfo(anchorString)
 
@@ -176,17 +176,66 @@ def scrape_BoxOfficeInfo(href_pattern, soup, movie_id):
         ## append that week to existing data
         df_movie = df_movie.append(df_week, ignore_index=True)
 
-        ## clear out the weekly data
-        df_movie.dropna().empty
-
         ## end for loop
 
-        # label the columns
+    # label the columns
     df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
                         "boxOffice", "theatres", "grossBoxOffice"]
 
     return df_movie
 
+def scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id):
+    '''
+    Scrape the necessary daily Box Office information from the webpage.
+    Daily Box Office returns are stored in a different pattern than weekly and
+    weekend returns, so need a separate scraper
+    '''
+    df_movie = pd.DataFrame()
+
+    for iAnchor in soup.findAll('a', href=href_pattern):
+
+        ## convert to string for regular expression parsing
+        anchorString = str(iAnchor)
+
+        # date Information
+        year=re.findall(r'20[0-9][0-9]', anchorString)[0]
+        date = re.findall(r'<b>(.+?)<', anchorString)[0]
+        date = re.sub('\x96', '-', date)
+
+        # Get Box Office Information etc
+        rank_tag = iAnchor.find_next("td")
+        rank = rank_tag.get_text()
+
+        # here is box office
+        boxOffice_tag = rank_tag.find_next("td")
+        boxOffice = boxOffice_tag.get_text()
+        boxOffice = money_to_int(boxOffice)
+
+        # find theatres
+        theatres_tag = boxOffice_tag.find_next("td").find_next("td").find_next("td").contents[0]
+        theatres = theatres_tag.get_text()
+        theatres = int(theatres.replace(',' , ''))
+
+        # find gross to date
+        grossBO_tag = theatres_tag.find_next("td").find_next("td").contents[0]
+        grossBoxOffice = grossBO_tag.get_text()
+        grossBoxOffice = money_to_int(grossBoxOffice)
+
+        # get day of release
+        dayOfRelease_tag = grossBO_tag.find_next("td").contents[0]
+        dayOfRelease     = dayOfRelease_tag.get_text()
+
+        # package it up
+        df_week = pd.DataFrame([[movie_id, year, date,
+                                  rank, boxOffice, theatres, grossBoxOffice, dayOfRelease
+                             ]]
+                            )
+        df_movie = df_movie.append(df_week, ignore_index=True)
+
+    ## label the columns
+    df_movie.columns = ["movie_id", "year", "date", "rank", "boxOffice",
+                        "theatres", "grossBoxOffice", "dayOfRelease"]
+    return df_movie
 
 def process_weekendBoxOffice(currentURL):
     '''
@@ -239,7 +288,29 @@ def process_weeklyBoxOffice(currentURL):
 
     df_movie = scrape_BoxOfficeInfo(href_pattern, soup, movie_id)
 
-    # clean up long weekend information
-    df_movie = identify_longWeekend(df_movie)
+    return movie_id, df_movie
+
+def process_dailyBoxOffice(currentURL):
+    '''
+    Takes a URL to a movie website on Box Office Mojo and collects daily
+    Box Office information.
+    '''
+    href_pattern = re.compile('^/daily/chart/\?sortdate=')
+
+    # Get the movie ID and direct to the page storing weekend Box Office takings
+    movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
+    print(movie_id)
+    boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=daily&view=chart&id=' + movie_id + '.htm'
+    print(boxOffice_url)
+
+    response = sess.get(boxOffice_url)
+
+    if response.status_code != 200:
+        return None
+
+    page = response.text
+    soup = BeautifulSoup(page,"lxml")
+
+    df_movie = scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id)
 
     return movie_id, df_movie

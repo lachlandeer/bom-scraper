@@ -50,7 +50,9 @@ from src.lib import processBoxOfficeReturns as boxOffice
 currentURL = 'http://www.boxofficemojo.com/movies/?id=intothewoods.htm'
 
 #frequency = 'weekend'
-frequency = 'weekly'
+#frequency = 'weekly'
+frequency = 'daily'
+
 
 if frequency == 'weekend':
     movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
@@ -61,6 +63,11 @@ elif frequency == 'weekly':
     movie_id, df_movie = boxOffice.process_weeklyBoxOffice(currentURL)
 
     outfile = 'boxOffice-weekly-'+ movie_id
+    df_movie.to_csv(outfile + '.csv', index = False)
+elif frequency == 'daily':
+    movie_id, df_movie = boxOffice.process_dailyBoxOffice(currentURL)
+
+    outfile = 'boxOffice-daily-'+ movie_id
     df_movie.to_csv(outfile + '.csv', index = False)
 else:
     pass
