@@ -198,33 +198,61 @@ def scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id):
         anchorString = str(iAnchor)
 
         # date Information
-        year=re.findall(r'20[0-9][0-9]', anchorString)[0]
-        date = re.findall(r'<b>(.+?)<', anchorString)[0]
-        date = re.sub('\x96', '-', date)
+        try:
+            year=re.findall(r'20[0-9][0-9]', anchorString)[0]
+            return year
+        except:
+            return None
+
+        try:
+            date = re.findall(r'<b>(.+?)<', anchorString)[0]
+            date = re.sub('\x96', '-', date)
+            return date
+        except:
+            return None
 
         # Get Box Office Information etc
-        rank_tag = iAnchor.find_next("td")
-        rank = rank_tag.get_text()
+        try:
+            rank_tag = iAnchor.find_next("td")
+            rank = rank_tag.get_text()
+            return rank
+        except:
+            return None
 
         # here is box office
-        boxOffice_tag = rank_tag.find_next("td")
-        boxOffice = boxOffice_tag.get_text()
-        boxOffice = money_to_int(boxOffice)
+        try:
+            boxOffice_tag = rank_tag.find_next("td")
+            boxOffice = boxOffice_tag.get_text()
+            boxOffice = money_to_int(boxOffice)
+            return boxOffice
+        except:
+            return None
 
         # find theatres
-        theatres_tag = boxOffice_tag.find_next("td").find_next("td").find_next("td").contents[0]
-        theatres = theatres_tag.get_text()
-        theatres = int(theatres.replace(',' , ''))
+        try:
+            theatres_tag = boxOffice_tag.find_next("td").find_next("td").find_next("td").contents[0]
+            theatres = theatres_tag.get_text()
+            theatres = int(theatres.replace(',' , ''))
+            return theatres
+        except:
+            return None
 
         # find gross to date
-        grossBO_tag = theatres_tag.find_next("td").find_next("td").contents[0]
-        grossBoxOffice = grossBO_tag.get_text()
-        grossBoxOffice = money_to_int(grossBoxOffice)
+        try:
+            grossBO_tag = theatres_tag.find_next("td").find_next("td").contents[0]
+            grossBoxOffice = grossBO_tag.get_text()
+            grossBoxOffice = money_to_int(grossBoxOffice)
+            return grossBoxOffice
+        except:
+            return None
 
         # get day of release
-        dayOfRelease_tag = grossBO_tag.find_next("td").contents[0]
-        dayOfRelease     = dayOfRelease_tag.get_text()
-
+        try:
+            dayOfRelease_tag = grossBO_tag.find_next("td").contents[0]
+            dayOfRelease     = dayOfRelease_tag.get_text()
+            return dayOfRelease
+        except:
+            return None
         # package it up
         df_week = pd.DataFrame([[movie_id, year, date,
                                   rank, boxOffice, theatres, grossBoxOffice, dayOfRelease
