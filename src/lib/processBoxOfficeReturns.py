@@ -200,59 +200,53 @@ def scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id):
         # date Information
         try:
             year=re.findall(r'20[0-9][0-9]', anchorString)[0]
-            return year
         except:
-            return None
+            year = None
 
         try:
             date = re.findall(r'<b>(.+?)<', anchorString)[0]
             date = re.sub('\x96', '-', date)
-            return date
         except:
-            return None
+            date = None
 
         # Get Box Office Information etc
         try:
             rank_tag = iAnchor.find_next("td")
             rank = rank_tag.get_text()
-            return rank
         except:
-            return None
+            rank = None
 
         # here is box office
         try:
             boxOffice_tag = rank_tag.find_next("td")
             boxOffice = boxOffice_tag.get_text()
             boxOffice = money_to_int(boxOffice)
-            return boxOffice
         except:
-            return None
+            boxOffice = None
 
         # find theatres
         try:
             theatres_tag = boxOffice_tag.find_next("td").find_next("td").find_next("td").contents[0]
             theatres = theatres_tag.get_text()
             theatres = int(theatres.replace(',' , ''))
-            return theatres
         except:
-            return None
+            theatres = None
 
         # find gross to date
         try:
             grossBO_tag = theatres_tag.find_next("td").find_next("td").contents[0]
             grossBoxOffice = grossBO_tag.get_text()
             grossBoxOffice = money_to_int(grossBoxOffice)
-            return grossBoxOffice
         except:
-            return None
+            grossBoxOffice = None
 
         # get day of release
         try:
             dayOfRelease_tag = grossBO_tag.find_next("td").contents[0]
             dayOfRelease     = dayOfRelease_tag.get_text()
-            return dayOfRelease
         except:
-            return None
+            dayOfRelease = None
+
         # package it up
         df_week = pd.DataFrame([[movie_id, year, date,
                                   rank, boxOffice, theatres, grossBoxOffice, dayOfRelease
