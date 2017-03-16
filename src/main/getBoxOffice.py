@@ -27,6 +27,8 @@ relevantYears = range(yearStart,yearEnd+1)
 #releaseType =['wide', 'limited']
 releaseType =['wide']
 
+#dontScrape = [http://www.boxofficemojo.com/movies/?id=backtothefutureday.htm]
+
 # directory where the data will be stored
 linkdir     = sys.argv[3]
 datadirRoot = sys.argv[4]
@@ -40,7 +42,6 @@ for iYear in relevantYears:
         with open(linkFile) as f:
             for row in csv.reader(f):
                 currentURL = ''.join(row) # convert list to string
-                print("scraping:", currentURL)
                 if frequency == 'weekend':
                     movie_id, df_movie = boxOffice.process_weekendBoxOffice(currentURL)
 

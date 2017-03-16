@@ -21,7 +21,7 @@ getDailyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
 .PHONY: getWeekendBoxOffice
 getWeekendBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
 			initBoxOffice #getLinks
-	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+	python $(SRC_MAIN)/getBoxOffice.py 2015 2015 \
 	 			$(OUT_LINKS) $(OUT_DATA_BO_WEEKEND) weekend
 
 ## getWeeklyBoxOffice : scrapes weekly box office

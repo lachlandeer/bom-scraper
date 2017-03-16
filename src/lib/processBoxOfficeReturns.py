@@ -268,9 +268,8 @@ def process_weekendBoxOffice(currentURL):
 
     # Get the movie ID and direct to the page storing weekend Box Office takings
     movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
-    print(movie_id)
+    print(print('Getting Weekend Box Office for', movie_id))
     boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekend&id=' + movie_id + '.htm'
-    print(boxOffice_url)
 
     response = sess.get(boxOffice_url)
 
@@ -296,9 +295,8 @@ def process_weeklyBoxOffice(currentURL):
 
     # Get the movie ID and direct to the page storing weekend Box Office takings
     movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
-    print(movie_id)
+    print('Getting Weekly Box Office for', movie_id)
     boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekly&id=' + movie_id + '.htm'
-    print(boxOffice_url)
 
     response = sess.get(boxOffice_url)
 
@@ -321,9 +319,8 @@ def process_dailyBoxOffice(currentURL):
 
     # Get the movie ID and direct to the page storing weekend Box Office takings
     movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
-    print(movie_id)
+    print('Getting Daily Box Office for', movie_id)
     boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=daily&view=chart&id=' + movie_id + '.htm'
-    print(boxOffice_url)
 
     response = sess.get(boxOffice_url)
 
