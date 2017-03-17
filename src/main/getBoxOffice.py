@@ -37,7 +37,7 @@ frequency = sys.argv[5]
 
 for iYear in relevantYears:
     for iType in releaseType:
-        linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
+        linkFile = linkdir + '/bom-links-trouble-'    + iType + "-" + str(iYear)
 
         with open(linkFile) as f:
             for row in csv.reader(f):
@@ -57,7 +57,11 @@ for iYear in relevantYears:
                 else:
                     pass
                 # save the data
-                datadir = datadirRoot + '/' + str(iYear) + '/'
-                df_movie.to_csv(datadir + outfile + '.csv', index = False)
+
+                if df_movie is not None:
+                    datadir = datadirRoot + '/' + str(iYear) + '/'
+                    df_movie.to_csv(datadir + outfile + '.csv', index = False)
+                else:
+                     pass
                 # pause between pages
                 time.sleep(randint(5,15))

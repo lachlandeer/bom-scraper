@@ -178,10 +178,13 @@ def scrape_BoxOfficeInfo(href_pattern, soup, movie_id):
         ## end for loop
 
     # label the columns
-    df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
-                        "boxOffice", "theatres", "grossBoxOffice"]
+    if not df_movie.empty:
+        df_movie.columns = ["movie_id", "year", "calendarWeek", "date", "rank",
+                            "boxOffice", "theatres", "grossBoxOffice"]
 
-    return df_movie
+        return df_movie
+    else:
+        pass
 
 def scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id):
     '''
@@ -254,9 +257,12 @@ def scrape_dailyBoxOfficeInfo(href_pattern, soup, movie_id):
         df_movie = df_movie.append(df_week, ignore_index=True)
 
     ## label the columns
-    df_movie.columns = ["movie_id", "year", "date", "rank", "boxOffice",
-                        "theatres", "grossBoxOffice", "dayOfRelease"]
-    return df_movie
+    if not df_movie.empty:
+        df_movie.columns = ["movie_id", "year", "date", "rank", "boxOffice",
+                            "theatres", "grossBoxOffice", "dayOfRelease"]
+        return df_movie
+    else:
+        pass
 
 def process_weekendBoxOffice(currentURL):
     '''
@@ -267,7 +273,7 @@ def process_weekendBoxOffice(currentURL):
 
     # Get the movie ID and direct to the page storing weekend Box Office takings
     movie_id = currentURL.rsplit('=', 1)[-1].rsplit('.', 1)[0]
-    print(print('Getting Weekend Box Office for', movie_id))
+    print('Getting Weekend Box Office for', movie_id)
     boxOffice_url = 'http://www.boxofficemojo.com/movies/?page=weekend&id=' + movie_id + '.htm'
 
     response = sess.get(boxOffice_url)
@@ -281,7 +287,10 @@ def process_weekendBoxOffice(currentURL):
     df_movie = scrape_BoxOfficeInfo(href_pattern, soup, movie_id)
 
     # clean up long weekend information
-    df_movie = identify_longWeekend(df_movie)
+    if df_movie is not None:
+        df_movie = identify_longWeekend(df_movie)
+    else:
+        pass
 
     return movie_id, df_movie
 
