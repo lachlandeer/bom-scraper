@@ -37,7 +37,7 @@ frequency = sys.argv[5]
 
 for iYear in relevantYears:
     for iType in releaseType:
-        linkFile = linkdir + '/bom-links-trouble-'    + iType + "-" + str(iYear)
+        linkFile = linkdir + '/bom-links-'    + iType + "-" + str(iYear)
 
         with open(linkFile) as f:
             for row in csv.reader(f):
