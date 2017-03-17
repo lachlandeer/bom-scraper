@@ -16,7 +16,6 @@ import time
 import urllib.request
 import csv
 
-import requests
 sess = requests.Session()
 adapter = requests.adapters.HTTPAdapter(max_retries=10)
 sess.mount('http://', adapter)
