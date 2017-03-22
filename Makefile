@@ -13,22 +13,22 @@ getAllBoxOffice: getDailyBoxOffice getWeekendBoxOffice getWeeklyBoxOffice
 ## getDailyBoxOffice  : scrapes daily box office
 .PHONY: getDailyBoxOffice
 getDailyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
-			initBoxOffice #getLinks
-	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+			initBoxOffice getLinks
+	python $(SRC_MAIN)/getBoxOffice.py $(YEAR_START) $(YEAR_END)  \
 	 			$(OUT_LINKS) $(OUT_DATA_BO_DAILY) daily
 
 ## getWeekendBoxOffice: scrapes weekend box office
 .PHONY: getWeekendBoxOffice
 getWeekendBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
-			initBoxOffice #getLinks
-	python $(SRC_MAIN)/getBoxOffice.py 2015 2015 \
+			initBoxOffice getLinks
+	python $(SRC_MAIN)/getBoxOffice.py $(YEAR_START) $(YEAR_END) \
 	 			$(OUT_LINKS) $(OUT_DATA_BO_WEEKEND) weekend
 
 ## getWeeklyBoxOffice : scrapes weekly box office
 .PHONY: getWeeklyBoxOffice
 getWeeklyBoxOffice: $(SRC_LIB)/processBoxOfficeReturns.py \
-			initBoxOffice #getLinks
-	python $(SRC_MAIN)/getBoxOffice.py 2014 2015 \
+			initBoxOffice getLinks
+	python $(SRC_MAIN)/getBoxOffice.py $(YEAR_START) $(YEAR_END)  \
 	 			$(OUT_LINKS) $(OUT_DATA_BO_WEEKLY) weekly
 
 ## getCharacteristics : scrapes the summary information from a movie's page
